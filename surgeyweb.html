@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+
+    <title>SURGELICIOUS</title>
+
+
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' />
+    <script src='http://api.tiles.mapbox.com/mapbox.js/v1.5.2/mapbox.js'></script>
+    <script src='js/leaflet.draw.js'></script>
+
+    <link href='http://api.tiles.mapbox.com/mapbox.js/v1.5.2/mapbox.css' rel='stylesheet' />
+    <link rel="stylesheet" href="css/leaflet.draw.css" />
+
+
+
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+
+    <style type="text/css">
+/*<![CDATA[*/
+      body {
+
+        font-family: 'Raleway', sans-serif;
+        color: #3f3f3f;
+        height: 100%;
+        overflow: hidden;
+        position: fixed;
+        width: 100%;
+        padding:0px;
+        margin:0; 
+        padding:0;
+         
+      }
+    
+      #map { position:absolute; top:0; bottom:0; width:100%; }
+
+
+   
+    
+  /*]]>*/
+  </style>
+
+
+
+</head>
+
+<body >
+    <!--div id="chart_div" style='right:340px; top:5px; width:400px; height:150px; z-index:70; position:absolute; background-color:white'>Chart me</div-->
+    <div >
+        <div  >
+
+
+
+
+        </div>
+    </div>
+    <div id='map' style='width:100%; height:100%'> </div>
+
+     <div id='stats' style=' position:absolute; height:100%; width:350px;top:0px;  right:0px; bottom:0px;  background-color:rgb(0,0,0); opacity:0.8; ' > 
+      
+      <p style='padding-top:5px; padding-left:10px; font-size:20pt; color:#efefef; '>
+        SURGE Cities   <span id='nahianumber' > </span>
+      </p>
+      
+      <div id='listitems' style='width:100%; height:100%; overflow-y:auto'>
+
+      </div>
+       
+    
+    </div>
+
+    <script >
+
+    var CityDivManager = (function(){
+        var divs = [];
+        var selectedCities = [];
+        // on hover select a city
+        return{
+            
+            
+            setDivs : function(manydivs){
+                divs = manyDivs
+
+                // sort by rank
+            },
+
+            getDivs : function(){
+                return divs;
+            },
+
+            selectCity: function(rank){
+                // select a city (highlight and show stuff)
+
+                // turn off selected cities
+
+            },
+
+            clearSelection:function(){
+                // clear selection
+            }
+
+        }
+
+
+    })();
+
+    var map
+
+    function setupMap(){
+
+         map = L.mapbox.map('map', 'johnderiggi.cdo_v3', {gridControl:false} ).setView([11.964, 123.717], 6);
+            
+        map.gridLayer.on('mousemove',function(o) {
+        
+        
+        
+          
+          if(o.data && o.data.rank){
+            
+            //document.getElementById(o.data.rank)
+
+          }
+          
+        }).on('mouseout', function(o) {
+          //document.getElementById('nahianumber').innerHTML = ''
+        
+        }).on('click', function(o){
+          // alert(o.data.District );
+        }); 
+      
+
+    }
+
+    function createBeautifulElement(city){
+        var div = document.createElement('div')
+        var p = document.createElement('p');
+        
+        div.appendChild(p)
+        p.innerHTML = city.city;
+        return div;
+
+    }
+
+    function addCities(){
+        var list = document.getElementById('listitems');
+
+        var cities = Cities.getCities()
+        for (var i in cities){
+            var city = createBeautifulElement(cities[i])
+            list.appendChild(city);
+            city.id = cities[i].rank;
+
+        }
+
+
+    }
+
+
+    function loadDraw(){
+        var drawnItems = new L.FeatureGroup();
+        map.addLayer(drawnItems);
+
+        var drawControl = new L.Control.Draw({
+            draw: {
+                position: 'topleft',
+                polygon:false,
+                marker:false,
+                polyline: false,
+                circle: false
+            },
+            edit: {
+                featureGroup: drawnItems
+            }
+        });
+        map.addControl(drawControl);
+
+        map.on('draw:created', function (e) {
+            var type = e.layerType,
+                layer = e.layer;
+
+            if (type === 'rectangle') {
+                layer.bindPopup('<p>west is ' + layer.getBounds().getWest() + '</p>');
+            }
+
+            drawnItems.addLayer(layer);
+        });
+    }
+
+      $(document).ready(function(){
+            
+            setupMap();
+            loadDraw();
+            addCities();
+
+        }
+
+        );
+
+
+
+      var Cities = (function(){
+        citydata = [{"province": "Batangas", "city": "Batangas City", "2007_pop": "295231", "region": "Luzon", "lon": "121.0581111", "rank": "35", "registered_business_count_2012": "", "area_km2": "282.96", "popgrowthrate": 3.51, "status": "Component city", "IRA_dependency_percent": "", "lat": "13.7572111", "2010_pop": "305607", "density_per_km2": "1080.036047", "poverty_percent": "7.1"}, {"province": "Batangas", "city": "Lipa", "2007_pop": "260568", "region": "Luzon", "lon": "121.152", "rank": "41", "registered_business_count_2012": "7308", "area_km2": "209.4", "popgrowthrate": 8.79, "status": "Component city", "IRA_dependency_percent": "49.9", "lat": "13.938", "2010_pop": "283468", "density_per_km2": "1353.715377", "poverty_percent": "3.9"}, {"province": "Batangas", "city": "Tanauan", "2007_pop": "142537", "region": "Luzon", "lon": "121.149902", "rank": "82", "registered_business_count_2012": "", "area_km2": "107.16", "popgrowthrate": 6.91, "status": "Component city", "IRA_dependency_percent": "", "lat": "14.08792", "2010_pop": "152393", "density_per_km2": "1422.10713", "poverty_percent": "4"}, {"province": "Benguet", "city": "Baguio", "2007_pop": "301926", "region": "Luzon", "lon": "120.5960071", "rank": "31", "registered_business_count_2012": "N/A", "area_km2": "57.51", "popgrowthrate": 5.55, "status": "Highly urbanized city", "IRA_dependency_percent": "40.5", "lat": "16.4023332", "2010_pop": "318676", "density_per_km2": "5541.227613", "poverty_percent": "2.4"}, {"province": "Cagayan", "city": "Tuguegarao", "2007_pop": "129539", "region": "Luzon", "lon": "121.7270206", "rank": "93", "registered_business_count_2012": "", "area_km2": "144.8", "popgrowthrate": 7.2, "status": "Component city", "IRA_dependency_percent": "", "lat": "17.6131813", "2010_pop": "138865", "density_per_km2": "959.0124309", "poverty_percent": "8.5"}, {"province": "Isabela", "city": "Cauayan", "2007_pop": "114254", "region": "Luzon", "lon": "121.787598", "rank": "113", "registered_business_count_2012": "", "area_km2": "336.4", "popgrowthrate": 7.07, "status": "Component city", "IRA_dependency_percent": "", "lat": "16.95705", "2010_pop": "122335", "density_per_km2": "363.6593341", "poverty_percent": "15.9"}, {"province": "Isabela", "city": "Santiago", "2007_pop": "126244", "region": "Luzon", "lon": "121.5537152", "rank": "98", "registered_business_count_2012": "2503", "area_km2": "255.5", "popgrowthrate": 5.2, "status": "Independent component city", "IRA_dependency_percent": "86.3", "lat": "16.7149832", "2010_pop": "132804", "density_per_km2": "519.7808219", "poverty_percent": "10.8"}, {"province": "Laguna", "city": "Bi\u00f1an", "2007_pop": "262735", "region": "Luzon", "lon": "121.0781493", "rank": "42", "registered_business_count_2012": "", "area_km2": "43.5", "popgrowthrate": 7.86, "status": "Component city", "IRA_dependency_percent": "", "lat": "14.3036345", "2010_pop": "283396", "density_per_km2": "6514.850575", "poverty_percent": "1.7"}, {"province": "Laguna", "city": "Cabuyao", "2007_pop": "205376", "region": "Luzon", "lon": "121.1247222", "rank": "49", "registered_business_count_2012": "", "area_km2": "43.3", "popgrowthrate": 20.87, "status": "Component city", "IRA_dependency_percent": "", "lat": "14.2783333", "2010_pop": "248436", "density_per_km2": "5737.551963", "poverty_percent": "1.7"}, {"province": "Laguna", "city": "Calamba", "2007_pop": "360281", "region": "Luzon", "lon": "121.1250825", "rank": "24", "registered_business_count_2012": "N/A", "area_km2": "149.5", "popgrowthrate": 8.08, "status": "Component city", "IRA_dependency_percent": "29.1", "lat": "14.1876712", "2010_pop": "389377", "density_per_km2": "2604.528428", "poverty_percent": "2"}, {"province": "Laguna", "city": "San Pablo", "2007_pop": "237259", "region": "Luzon", "lon": "121.3233369", "rank": "48", "registered_business_count_2012": "N/A", "area_km2": "197.56", "popgrowthrate": 4.9, "status": "Component city", "IRA_dependency_percent": "62.9", "lat": "14.0642108", "2010_pop": "248890", "density_per_km2": "1259.819802", "poverty_percent": "2.7"}, {"province": "Laguna", "city": "Santa Rosa", "2007_pop": "266943", "region": "Luzon", "lon": "121.0888928", "rank": "40", "registered_business_count_2012": "3002", "area_km2": "54.84", "popgrowthrate": 6.64, "status": "Component city", "IRA_dependency_percent": "23.3", "lat": "14.2843023", "2010_pop": "284670", "density_per_km2": "5190.919037", "poverty_percent": "1.5"}, {"province": "Pampanga", "city": "Angeles", "2007_pop": "314493", "region": "Luzon", "lon": "120.5887029", "rank": "29", "registered_business_count_2012": "10569", "area_km2": "60.27", "popgrowthrate": 3.77, "status": "Highly urbanized city", "IRA_dependency_percent": "45.9", "lat": "15.1449853", "2010_pop": "326336", "density_per_km2": "5414.567778", "poverty_percent": "5"}, {"province": "Pampanga", "city": "Mabalacat", "2007_pop": "203307", "region": "Luzon", "lon": "120.5744387", "rank": "58", "registered_business_count_2012": "", "area_km2": "83.18", "popgrowthrate": 6.05, "status": "Component city", "IRA_dependency_percent": "", "lat": "15.2228709", "2010_pop": "215610", "density_per_km2": "2592.089445", "poverty_percent": "7.2"}, {"province": "Pampanga", "city": "San Fernando", "2007_pop": "269365", "region": "Luzon", "lon": "120.6567054", "rank": "39", "registered_business_count_2012": "N/A", "area_km2": "67.74", "popgrowthrate": 6.14, "status": "Component city", "IRA_dependency_percent": "41.4", "lat": "15.0593937", "2010_pop": "285912", "density_per_km2": "4220.726306", "poverty_percent": "4.8"}, {"province": "Tarlac", "city": "Tarlac City", "2007_pop": "314155", "region": "Luzon", "lon": "120.5963492", "rank": "32", "registered_business_count_2012": "9079", "area_km2": "274.66", "popgrowthrate": 1.33, "status": "Component city", "IRA_dependency_percent": "68.1", "lat": "15.4754786", "2010_pop": "318332", "density_per_km2": "1159.003859", "poverty_percent": "8.7"}, {"province": "Zambales", "city": "Olongapo", "2007_pop": "227270", "region": "Luzon", "lon": "120.2951651", "rank": "55", "registered_business_count_2012": "7415", "area_km2": "185", "popgrowthrate": -2.68, "status": "Highly urbanized city", "IRA_dependency_percent": "37.8", "lat": "14.8761975", "2010_pop": "221178", "density_per_km2": "1195.556757", "poverty_percent": "4.5"}, {"province": "Agusan del Norte", "city": "Butuan", "2007_pop": "298378", "region": "Mindanao", "lon": "125.5406234", "rank": "34", "registered_business_count_2012": "8598", "area_km2": "816.62", "popgrowthrate": 3.8, "status": "Highly urbanized city", "IRA_dependency_percent": "65.9", "lat": "8.9475377", "2010_pop": "309709", "density_per_km2": "379.257182", "poverty_percent": "27.6"}, {"province": "Bukidnon", "city": "Malaybalay", "2007_pop": "144065", "region": "Mindanao", "lon": "125.1276536", "rank": "81", "registered_business_count_2012": "4793", "area_km2": "969.19", "popgrowthrate": 6.26, "status": "Component city", "IRA_dependency_percent": "89.7", "lat": "8.1306038", "2010_pop": "153085", "density_per_km2": "157.9514853", "poverty_percent": "34.6"}, {"province": "Bukidnon", "city": "Valencia", "2007_pop": "162745", "region": "Mindanao", "lon": "125.0941667", "rank": "69", "registered_business_count_2012": "", "area_km2": "587.29", "popgrowthrate": 11.56, "status": "Component city", "IRA_dependency_percent": "", "lat": "7.9063889", "2010_pop": "181556", "density_per_km2": "309.1419912", "poverty_percent": "35.8"}, {"province": "Cotabato", "city": "Kidapawan", "2007_pop": "117610", "region": "Mindanao", "lon": "125.0911341", "rank": "107", "registered_business_count_2012": "", "area_km2": "358.47", "popgrowthrate": 6.66, "status": "Component city", "IRA_dependency_percent": "", "lat": "7.010607", "2010_pop": "125447", "density_per_km2": "349.9511814", "poverty_percent": "19.2"}, {"province": "Davao del Norte", "city": "Panabo", "2007_pop": "154329", "region": "Mindanao", "lon": "125.6841178", "rank": "72", "registered_business_count_2012": "", "area_km2": "251.23", "popgrowthrate": 12.98, "status": "Component city", "IRA_dependency_percent": "", "lat": "7.3087068", "2010_pop": "174364", "density_per_km2": "694.0413167", "poverty_percent": "14.8"}, {"province": "Davao del Norte", "city": "Tagum", "2007_pop": "215967", "region": "Mindanao", "lon": "125.8094242", "rank": "52", "registered_business_count_2012": "7184", "area_km2": "195.8", "popgrowthrate": 12.43, "status": "Component city", "IRA_dependency_percent": "46.8", "lat": "7.448212", "2010_pop": "242801", "density_per_km2": "1240.045965", "poverty_percent": "15"}, {"province": "Davao Oriental", "city": "Mati", "2007_pop": "122046", "region": "Mindanao", "lon": "126.2467484", "rank": "103", "registered_business_count_2012": "1044", "area_km2": "588.63", "popgrowthrate": 3.36, "status": "Component city", "IRA_dependency_percent": "73.1", "lat": "6.9437633", "2010_pop": "126143", "density_per_km2": "214.2993052", "poverty_percent": "33.9"}, {"province": "Lanao del Norte", "city": "Iligan", "2007_pop": "308046", "region": "Mindanao", "lon": "124.2452422", "rank": "30", "registered_business_count_2012": "7753", "area_km2": "813.37", "popgrowthrate": 4.8, "status": "Highly urbanized city", "IRA_dependency_percent": "65.8", "lat": "8.2280209", "2010_pop": "322821", "density_per_km2": "396.8931728", "poverty_percent": "24.4"}, {"province": "Misamis Occidental", "city": "Ozamiz", "2007_pop": "123137", "region": "Mindanao", "lon": "123.841721", "rank": "99", "registered_business_count_2012": "", "area_km2": "169.95", "popgrowthrate": 6.81, "status": "Component city", "IRA_dependency_percent": "", "lat": "8.145755", "2010_pop": "131527", "density_per_km2": "773.9158576", "poverty_percent": "29.8"}, {"province": "Misamis Oriental", "city": "Cagayan de Oro", "2007_pop": "553966", "region": "Mindanao", "lon": "124.6318977", "rank": "10", "registered_business_count_2012": "", "area_km2": "412.8", "popgrowthrate": 8.69, "status": "Highly urbanized city", "IRA_dependency_percent": "", "lat": "8.4542363", "2010_pop": "602088", "density_per_km2": "1458.546512", "poverty_percent": ""}, {"province": "South Cotabato", "city": "General Santos", "2007_pop": "529542", "region": "Mindanao", "lon": "125.1666667", "rank": "15", "registered_business_count_2012": "8793", "area_km2": "492.86", "popgrowthrate": 1.61, "status": "Highly urbanized city", "IRA_dependency_percent": "62", "lat": "6.1166667", "2010_pop": "538086", "density_per_km2": "1091.762367", "poverty_percent": "22.5"}, {"province": "South Cotabato", "city": "Koronadal", "2007_pop": "149622", "region": "Mindanao", "lon": "125.065201", "rank": "77", "registered_business_count_2012": "", "area_km2": "277", "popgrowthrate": 5.78, "status": "Component city", "IRA_dependency_percent": "", "lat": "6.228593", "2010_pop": "158273", "density_per_km2": "571.3826715", "poverty_percent": "21.7"}, {"province": "Zamboanga del Sur", "city": "Zamboanga", "2007_pop": "774407", "region": "Mindanao", "lon": "122.0841549", "rank": "6", "registered_business_count_2012": "8941", "area_km2": "1414.7", "popgrowthrate": 4.26, "status": "Highly urbanized city", "IRA_dependency_percent": "60.1", "lat": "6.9206713", "2010_pop": "807129", "density_per_km2": "570.5301477", "poverty_percent": "19.9"}, {"province": "Oriental Mindoro", "city": "Calapan", "2007_pop": "116976", "region": "Region IV B", "lon": "121.1645706", "rank": "110", "registered_business_count_2012": "", "area_km2": "250.06", "popgrowthrate": 6.15, "status": "Component city", "IRA_dependency_percent": "", "lat": "13.3770935", "2010_pop": "124173", "density_per_km2": "496.5728225", "poverty_percent": "23"}, {"province": "Palawan", "city": "Puerto Princesa", "2007_pop": "210508", "region": "Region IV B", "lon": "118.78551", "rank": "54", "registered_business_count_2012": "9759", "area_km2": "2381.02", "popgrowthrate": 5.78, "status": "Highly urbanized city", "IRA_dependency_percent": "83.7", "lat": "9.9672163", "2010_pop": "222673", "density_per_km2": "93.52000403", "poverty_percent": "15.5"}, {"province": "Cebu", "city": "Carcar", "2007_pop": "100632", "region": "Visayas", "lon": "123.6333333", "rank": "137", "registered_business_count_2012": "", "area_km2": "116.78", "popgrowthrate": 6.65, "status": "Component city", "IRA_dependency_percent": "", "lat": "10.1", "2010_pop": "107323", "density_per_km2": "919.0186676", "poverty_percent": "27.2"}, {"province": "Cebu", "city": "Cebu City", "2007_pop": "798809", "region": "Visayas", "lon": "123.8854366", "rank": "5", "registered_business_count_2012": "", "area_km2": "315", "popgrowthrate": 8.43, "status": "Highly urbanized city", "IRA_dependency_percent": "", "lat": "10.3156992", "2010_pop": "866171", "density_per_km2": "2749.749206", "poverty_percent": "13.9"}, {"province": "Cebu", "city": "Danao", "2007_pop": "109354", "region": "Visayas", "lon": "124.030296", "rank": "119", "registered_business_count_2012": "", "area_km2": "107.3", "popgrowthrate": 9.05, "status": "Component city", "IRA_dependency_percent": "", "lat": "10.52716", "2010_pop": "119252", "density_per_km2": "1111.38863", "poverty_percent": "31.6"}, {"province": "Cebu", "city": "Lapu-Lapu", "2007_pop": "292530", "region": "Visayas", "lon": "123.997295", "rank": "26", "registered_business_count_2012": "7185", "area_km2": "58.1", "popgrowthrate": 19.81, "status": "Highly urbanized city", "IRA_dependency_percent": "39", "lat": "10.2661822", "2010_pop": "350467", "density_per_km2": "6032.134251", "poverty_percent": "19.6"}, {"province": "Cebu", "city": "Mandaue", "2007_pop": "318575", "region": "Visayas", "lon": "123.9333333", "rank": "27", "registered_business_count_2012": "9022", "area_km2": "25.18", "popgrowthrate": 4.0, "status": "Highly urbanized city", "IRA_dependency_percent": "40", "lat": "10.3333333", "2010_pop": "331320", "density_per_km2": "13158.06195", "poverty_percent": "14.1"}, {"province": "Cebu", "city": "Naga", "2007_pop": "95163", "region": "Visayas", "lon": "123.7583333", "rank": "156", "registered_business_count_2012": "", "area_km2": "101.97", "popgrowthrate": 6.73, "status": "Component city", "IRA_dependency_percent": "", "lat": "10.2113889", "2010_pop": "101571", "density_per_km2": "996.0870844", "poverty_percent": "27.1"}, {"province": "Cebu", "city": "Talisay", "2007_pop": "179359", "region": "Visayas", "lon": "123.8333333", "rank": "61", "registered_business_count_2012": "", "area_km2": "39.87", "popgrowthrate": 11.94, "status": "Component city", "IRA_dependency_percent": "", "lat": "10.2438889", "2010_pop": "200772", "density_per_km2": "5035.665914", "poverty_percent": "18"}, {"province": "Iloilo", "city": "Iloilo City", "2007_pop": "418710", "region": "Visayas", "lon": "122.5621063", "rank": "21", "registered_business_count_2012": "", "area_km2": "78.34", "popgrowthrate": 1.41, "status": "Highly urbanized city", "IRA_dependency_percent": "", "lat": "10.7201501", "2010_pop": "424619", "density_per_km2": "5420.206791", "poverty_percent": "7.6"}, {"province": "Leyte", "city": "Ormoc", "2007_pop": "177524", "region": "Visayas", "lon": "124.612801", "rank": "63", "registered_business_count_2012": "4989", "area_km2": "613.6", "popgrowthrate": 7.7, "status": "Independent component city", "IRA_dependency_percent": "52.7", "lat": "11.00698", "2010_pop": "191200", "density_per_km2": "311.6036506", "poverty_percent": "28.3"}, {"province": "Leyte", "city": "Tacloban", "2007_pop": "217199", "region": "Visayas", "lon": "125", "rank": "56", "registered_business_count_2012": "13303", "area_km2": "201.72", "popgrowthrate": 1.83, "status": "Highly urbanized city", "IRA_dependency_percent": "61.1", "lat": "11.25", "2010_pop": "221174", "density_per_km2": "1096.440611", "poverty_percent": "20.5"}, {"province": "Negros Occidental", "city": "Bacolod", "2007_pop": "499497", "region": "Visayas", "lon": "122.9689565", "rank": "18", "registered_business_count_2012": "22619", "area_km2": "162.67", "popgrowthrate": 2.47, "status": "Highly urbanized city", "IRA_dependency_percent": "55.3", "lat": "10.6407389", "2010_pop": "511820", "density_per_km2": "3146.369951", "poverty_percent": "11.2"}, {"province": "Samar", "city": "Calbayog", "2007_pop": "163657", "region": "Visayas", "lon": "124.600304", "rank": "73", "registered_business_count_2012": "5155", "area_km2": "880.74", "popgrowthrate": 5.57, "status": "Component city", "IRA_dependency_percent": "90.4", "lat": "12.06994", "2010_pop": "172778", "density_per_km2": "196.1736721", "poverty_percent": "38.7"}]
+
+        return {
+
+            getCities : function(){
+                return citydata;
+            }
+        }
+
+      })();
+
+        </script>
+
+    </body>
+    </html>
